@@ -21,13 +21,29 @@ class FileSearcher extends TNTSearch {
 		'storage' => ''
 	];
 
-	protected FileIndexer $indexer;
+	public const SUPPORTED_LANGUAGES = [
+		'ar' => 'Arabic',
+		'cr' => 'Croatian',
+		'fr' => 'French',
+		'de' => 'German',
+		'en' => 'Porter',
+		'it' => 'Italian',
+		'lv' => 'Latvian',
+		'pl' => 'Polish',
+		'pt' => 'Portuguese',
+		'ru' => 'Russian',
+		'uk' => 'Ukrainian',
+	];
 
-	public function __construct() {
+	protected FileIndexer $indexer;
+	private string $language;
+
+	public function __construct(string $language = 'no') {
 		parent::__construct();
 		$this->loadConfig();
 		$this->asYouType(true);
 		$this->fuzziness(true);
+		$this->language = $language;
 	}
 
 	/**
@@ -83,6 +99,8 @@ class FileSearcher extends TNTSearch {
 		$this->index->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 		$this->indexer->setIndex($this->index);
+		$this->indexer->setLanguage($this->language);
+
 		return $this->indexer;
 	}
 
@@ -93,6 +111,8 @@ class FileSearcher extends TNTSearch {
 	 */
 	public function createIndex($indexName = '', $disableOutput = false): FileIndexer {
 		$this->indexer->createIndex($indexName);
+		$this->indexer->setLanguage($this->language);
+
 		$this->index = $this->indexer->getIndex();
 		return $this->indexer;
 	}

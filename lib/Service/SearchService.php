@@ -12,6 +12,7 @@ use OCP\Files\File;
 use OCP\Files\Folder;
 use OCP\Files\GenericFileException;
 use OCP\Files\InvalidPathException;
+use OCP\IConfig;
 use OCP\ITempManager;
 use OCP\Lock\LockedException;
 use PDO;
@@ -23,15 +24,18 @@ class SearchService {
 	private CollectiveFolderManager $collectiveFolderManager;
 	private ITempManager $tempManager;
 	private LoggerInterface $logger;
+	private IConfig $config;
 
 	public function __construct(
 		CollectiveFolderManager $collectiveFolderManager,
 		ITempManager $tempManager,
-		LoggerInterface $logger
+		LoggerInterface $logger,
+		IConfig $config,
 	) {
 		$this->collectiveFolderManager = $collectiveFolderManager;
 		$this->tempManager = $tempManager;
 		$this->logger = $logger;
+		$this->config = $config;
 	}
 
 	/**
@@ -48,8 +52,7 @@ class SearchService {
 			throw new FileSearchException('Collectives search service could not find folder for collective.', 0, $e);
 		}
 
-		$searcher = new FileSearcher();
-		$indexer = $searcher->createIndex($indexPath);
+		$indexer = $this->createFileSearcher()->createIndex($indexPath);
 		$indexer->runOnDirectory($collectiveFolder);
 
 		$this->saveIndex($collective, $indexPath);
@@ -69,7 +72,7 @@ class SearchService {
 			return [];
 		}
 
-		$searcher = new FileSearcher();
+		$searcher = $this->createFileSearcher();
 		$file = $this->getIndexForCollective($collective);
 		if ($file === null) {
 			$this->logger->warning('Collectives search failed to find search index for collective with ID ' . $collective->getId());
@@ -136,6 +139,12 @@ class SearchService {
 		}
 
 		return $file instanceof File ? $file : null;
+	}
+
+	private function createFileSearcher(): FileSearcher
+	{
+		$defaultLanguage = $this->config->getSystemValue('default_language', 'en');
+		return new FileSearcher(FileSearcher::SUPPORTED_LANGUAGES[$defaultLanguage] ?? 'no');
 	}
 
 	/**
