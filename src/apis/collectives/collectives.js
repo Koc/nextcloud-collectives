@@ -91,6 +91,19 @@ export function updateCollectiveEditPermissions(collectiveId, level) {
 }
 
 /**
+ * Set the permission level required for export.
+ *
+ * @param {number} collectiveId - id of the collective to update
+ * @param {number} level - required level for export
+ */
+export function updateCollectiveExportPermissions(collectiveId, level) {
+	return axios.put(
+		collectivesUrl(collectiveId, 'exportLevel'),
+		{ level },
+	)
+}
+
+/**
  * Set the permission level required for sharing.
  *
  * @param {number} collectiveId - id of the collective to update

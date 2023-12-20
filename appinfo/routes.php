@@ -15,6 +15,8 @@ return [
 			'requirements' => ['id' => '\d+']],
 		['name' => 'collective#editLevel', 'url' => '/_api/{id}/editLevel', 'verb' => 'PUT',
 			'requirements' => ['id' => '\d+']],
+		['name' => 'collective#exportLevel', 'url' => '/_api/{id}/exportLevel', 'verb' => 'PUT',
+			'requirements' => ['id' => '\d+']],
 		['name' => 'collective#shareLevel', 'url' => '/_api/{id}/shareLevel', 'verb' => 'PUT',
 			'requirements' => ['id' => '\d+']],
 		['name' => 'collective#pageMode', 'url' => '/_api/{id}/pageMode', 'verb' => 'PUT',

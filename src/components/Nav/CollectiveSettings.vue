@@ -98,6 +98,34 @@
 					{{ t('collectives', 'All members') }}
 				</NcCheckboxRadioSwitch>
 			</div>
+
+			<div class="subsection-header subsection-header__second">
+				{{ t('collectives', 'Allow exporting for') }}
+			</div>
+
+			<div class="permissions-input-export">
+				<NcCheckboxRadioSwitch :checked.sync="exportPermissions"
+									   :value="String(memberLevels.LEVEL_ADMIN)"
+									   :loading="loading('updateCollectiveExportPermissions_' + String(memberLevels.LEVEL_ADMIN))"
+									   name="export_admins"
+									   type="radio">
+					{{ t('collectives', 'Admins only') }}
+				</NcCheckboxRadioSwitch>
+				<NcCheckboxRadioSwitch :checked.sync="exportPermissions"
+									   :value="String(memberLevels.LEVEL_MODERATOR)"
+									   :loading="loading('updateCollectiveExportPermissions_' + String(memberLevels.LEVEL_MODERATOR))"
+									   name="export_moderators"
+									   type="radio">
+					{{ t('collectives', 'Admins and moderators') }}
+				</NcCheckboxRadioSwitch>
+				<NcCheckboxRadioSwitch :checked.sync="exportPermissions"
+									   :value="String(memberLevels.LEVEL_MEMBER)"
+									   :loading="loading('updateCollectiveExportPermissions_' + String(memberLevels.LEVEL_MEMBER))"
+									   name="export_members"
+									   type="radio">
+					{{ t('collectives', 'All members') }}
+				</NcCheckboxRadioSwitch>
+			</div>
 		</NcAppSettingsSection>
 
 		<NcAppSettingsSection id="page-settings" :name="t('collectives', 'Page settings')">
@@ -147,6 +175,7 @@ import {
 	TRASH_COLLECTIVE,
 	UPDATE_COLLECTIVE_EDIT_PERMISSIONS,
 	UPDATE_COLLECTIVE_SHARE_PERMISSIONS,
+	UPDATE_COLLECTIVE_EXPORT_PERMISSIONS,
 	UPDATE_COLLECTIVE_PAGE_MODE,
 } from '../../store/actions.js'
 import displayError from '../../util/displayError.js'
@@ -180,6 +209,7 @@ export default {
 			showSettings: true,
 			editPermissions: String(this.collective.editPermissionLevel),
 			sharePermissions: String(this.collective.sharePermissionLevel),
+			exportPermissions: String(this.collective.exportPermissionLevel),
 			pageMode: String(this.collective.pageMode),
 			emoji: null,
 		}
@@ -238,6 +268,19 @@ export default {
 				throw error
 			})
 		},
+		exportPermissions(val) {
+			const permission = String(val)
+			this.load('updateCollectiveExportPermissions_' + permission)
+			this.dispatchUpdateCollectiveExportPermissions({ id: this.collective.id, level: parseInt(permission) }).then(() => {
+				showSuccess(t('collectives', 'Exporting permissions updated'))
+				this.done('updateCollectiveExportPermissions_' + permission)
+			}).catch((error) => {
+				this.exportPermissions = String(this.collective.exportPermissionLevel)
+				this.done('updateCollectiveExportPermissions_' + permission)
+				showError(t('collectives', 'Could not update exporting permissions'))
+				throw error
+			})
+		},
 		sharePermissions(val) {
 			const permission = String(val)
 			this.load('updateCollectiveSharePermissions_' + permission)
@@ -279,6 +322,7 @@ export default {
 			dispatchTrashCollective: TRASH_COLLECTIVE,
 			dispatchUpdateCollectiveEditPermissions: UPDATE_COLLECTIVE_EDIT_PERMISSIONS,
 			dispatchUpdateCollectiveSharePermissions: UPDATE_COLLECTIVE_SHARE_PERMISSIONS,
+			dispatchUpdateCollectiveExportPermissions: UPDATE_COLLECTIVE_EXPORT_PERMISSIONS,
 			dispatchUpdateCollectivePageMode: UPDATE_COLLECTIVE_PAGE_MODE,
 		}),
 
