@@ -342,5 +342,16 @@ export default {
 	.edit-button, .action-item, .emoji-picker-emoticon {
 		display: none !important;
 	}
+
+	.app-content-details::after {
+		content: "Друкувати заборонено";
+		display: block;
+		width: 100%;
+		text-align: center;
+	}
+
+	.app-content-details > * {
+		display: none;
+	}
 }
 </style>
