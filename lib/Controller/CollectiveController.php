@@ -138,6 +138,29 @@ class CollectiveController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
+	 * @param int $id
+	 * @param int $level
+	 *
+	 * @return DataResponse
+	 */
+	public function exportLevel(int $id, int $level): DataResponse {
+		return $this->prepareResponse(function () use ($id, $level): array {
+			$collectiveInfo = $this->service->setPermissionLevel(
+				$id,
+				$this->getUserId(),
+				$level,
+				//fixme: use another constant here?
+				Constants::PERMISSION_READ
+			);
+			return [
+				"data" => $collectiveInfo,
+			];
+		});
+	}
+
+	/**
+	 * @NoAdminRequired
 	 */
 	public function trash(int $id): DataResponse {
 		return $this->prepareResponse(function () use ($id): array {

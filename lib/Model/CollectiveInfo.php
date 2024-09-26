@@ -69,12 +69,21 @@ class CollectiveInfo extends Collective {
 		return $this->getPermissionLevel(Collective::editPermissions);
 	}
 
+	public function getExportPermissionLevel(): int {
+		//fixme: use another constant here?
+		return $this->getPermissionLevel(Constants::PERMISSION_READ);
+	}
+
 	public function getSharePermissionLevel(): int {
 		return $this->getPermissionLevel(Constants::PERMISSION_SHARE);
 	}
 
 	public function canEdit(): bool {
 		return $this->level >= $this->getEditPermissionLevel();
+	}
+
+	public function canExport(): bool {
+		return $this->level >= $this->getExportPermissionLevel();
 	}
 
 	public function canShare(): bool {
@@ -102,8 +111,10 @@ class CollectiveInfo extends Collective {
 			'name' => $this->name,
 			'level' => $this->level,
 			'editPermissionLevel' => $this->getEditPermissionLevel(),
+			'exportPermissionLevel' => $this->getExportPermissionLevel(),
 			'sharePermissionLevel' => $this->getSharePermissionLevel(),
 			'canEdit' => $this->canEdit(),
+			'canExport' => $this->canExport(),
 			'canShare' => $this->canShare(),
 			'shareToken' => $this->shareToken,
 			'isPageShare' => $this->isPageShare,

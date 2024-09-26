@@ -32,6 +32,7 @@ import {
 	UPDATE_SHARE,
 	DELETE_SHARE,
 	UPDATE_COLLECTIVE_EDIT_PERMISSIONS,
+	UPDATE_COLLECTIVE_EXPORT_PERMISSIONS,
 	UPDATE_COLLECTIVE_SHARE_PERMISSIONS,
 	UPDATE_COLLECTIVE_PAGE_MODE,
 	SET_COLLECTIVE_USER_SETTING_PAGE_ORDER,
@@ -89,6 +90,10 @@ export default {
 			return getters.collectiveCanEdit(getters.currentCollective)
 		},
 
+		currentCollectiveCanExport(state, getters) {
+			return getters.collectiveExportShare(getters.currentCollective)
+		},
+
 		currentCollectiveCanShare(_state, getters) {
 			return getters.collectiveCanShare(getters.currentCollective)
 		},
@@ -135,6 +140,13 @@ export default {
 				return false
 			}
 			return collective.canEdit
+		},
+
+		collectiveCanExport: (state) => (collective) => {
+			if (!collective) {
+				return false
+			}
+			return collective.canExport
 		},
 
 		collectiveCanShare: (_state, getters) => (collective) => {
@@ -420,6 +432,18 @@ export default {
 		 */
 		async [UPDATE_COLLECTIVE_EDIT_PERMISSIONS]({ commit }, { id, level }) {
 			const response = await api.updateCollectiveEditPermissions(id, level)
+			commit(ADD_OR_UPDATE_COLLECTIVE, response.data.data)
+		},
+
+		/**
+		 * @param {object} store the vuex store
+		 * @param {Function} store.commit commit changes
+		 * @param {object} data the data object
+		 * @param {number} data.id ID of the colletive to be updated
+		 * @param {number} data.level new minimum level for exporting
+		 */
+		async [UPDATE_COLLECTIVE_EXPORT_PERMISSIONS]({ commit }, { id, level }) {
+			const response = await api.updateCollectiveExportPermissions(id, level)
 			commit(ADD_OR_UPDATE_COLLECTIVE, response.data.data)
 		},
 

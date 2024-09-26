@@ -18,6 +18,7 @@
 			</template>
 		</NcActionButton>
 		<NcActionLink :close-after-click="true"
+			v-if="collectiveCanExport(collective)"
 			:href="printLink"
 			target="_blank">
 			{{ t('collectives', 'Export or print') }}
@@ -89,6 +90,7 @@ export default {
 
 	computed: {
 		...mapGetters([
+			'collectiveCanExport',
 			'collectiveCanShare',
 			'isCollectiveAdmin',
 			'isPublic',
